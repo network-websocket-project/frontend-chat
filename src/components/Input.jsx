@@ -39,22 +39,25 @@ const Input = ({
 
     return (
         <>
-            <input
-                id={id}
-                type={type}
-                placeholder={placeholder}
-                value={state.value}
-                onChange={(e) => {
-                    dispatch({
-                        type: "CHANGE",
-                        value: e.target.value,
-                        validator: validator,
-                    });
-                }}
-                onFocus={() => {
-                    dispatch({ type: "TOUCH" });
-                }}
-            ></input>
+            <div className="flex flex-col gap-y-0 w-full">
+                <label htmrFor={id} className="ml-12 text-red-700 font-bold h-[20px]">*</label>
+                <input className="self-center text-center font-montserrat font-bold border-2 border-[#909090] rounded-lg w-[80%] py-2 text-xl"
+                    id={id}
+                    type={type}
+                    placeholder={placeholder}
+                    value={state.value}
+                    onChange={(e) => {
+                        dispatch({
+                            type: "CHANGE",
+                            value: e.target.value,
+                            validator: validator,
+                        });
+                    }}
+                    onFocus={() => {
+                        dispatch({ type: "TOUCH" });
+                    }}
+                ></input>
+            </div>
         </>
     );
 };
