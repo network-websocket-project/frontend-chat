@@ -15,7 +15,7 @@ apiClient.interceptors.request.use(
       }
       return {
         ...config,
-        headers: { ...config.headers, Authorization: accessToken },
+        headers: { ...config.headers, Authorization: "Bearer "+accessToken },
       }
     },
     // TODO: Handle other error

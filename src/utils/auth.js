@@ -8,12 +8,11 @@ export const authClient = axios.create({
 export const getMyInfo = () => {};
 
 export const getAccessToken = async () => {
-  const userData = localStorage.getItem("userData");
-  if (!userData) {
+  const token = localStorage.getItem("token");
+  if (!token) {
     return null;
   }
 
-  const { token } = JSON.parse(userData);
 
   // Renew access token if expired
 //   const now = new Date();

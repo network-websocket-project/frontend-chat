@@ -3,9 +3,10 @@ import { useForm } from "../hooks/form-hook";
 import Input from "./Input.jsx";
 import { VALIDATOR_REQUIRE, VALIDATOR_MATCH } from "./Validate";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import uploadButton from "../assets/UploadButton.svg";
 import { authClient } from "../utils/auth";
+import { AuthContext } from "../contexts/AuthContext";
 
 const AuthForm = ({
   inputs,
@@ -16,6 +17,7 @@ const AuthForm = ({
   title,
   file,
 }) => {
+  const authCtx = useContext(AuthContext);
   let initState = {};
   inputs.forEach((input) => {
     initState[input.id] = { value: "", isValid: false };
@@ -49,6 +51,7 @@ const AuthForm = ({
       const res = await authClient.post(path, data, {
         headers: { "Content-Type": "application/json" },
       });
+      authCtx.login(res.data)
     } catch (err) {
       console.log(err);
     }
