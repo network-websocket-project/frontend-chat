@@ -15,15 +15,15 @@ const ChatRoomPage = () => {
             <Navbar />
             <div className="flex flex-row mt-[10vh]">
                 <div className="w-1/4 border-r-4 border-[#1F1C32] h-[90vh] bg-[#151223] flex-flex-col px-4 font-montserrat pt-2">
-                    <div className="text-white">Chats</div>
-                    <input placeholder="Find Chatter" className="flex px-2 rounded-lg justify-self-center my-4 border-2 border-[#1F1C32] placeholder:text-[#1F1C32] bg-[#151223] text-white font-bold py-2 w-full" ></input>
-                    <div className="flex flex-col overflow-y-scroll">
+                    <div className="text-white font-montserrat font-bold text-xl">Chats</div>
+                    <input placeholder="Find Chat" className="flex px-2 rounded-lg justify-self-center my-4 border-2 border-[#1F1C32] placeholder:text-[#1F1C32] bg-[#151223] text-white font-bold py-2 w-full" ></input>
+                    <div className="flex flex-col overflow-y-scroll gap-y-1">
                         {chatList.map((chat, i) => {
                             return <ProfileCard group={chat.isGroup} name={chat.name} key={i} onClick={setSelectChat.bind(null, chat)} />
                         })}
                     </div>
                 </div>
-                {selectChat && <div className="w-full bg-[#151223] h-[90vh] px-8 pt-4 pb-8">
+                {selectChat && <div className="w-full bg-[#151223] h-[90vh] px-8 pt-4 pb-8 flex flex-col">
                     <ProfileCard group={selectChat.isGroup} name={selectChat.name} large />
                     <div className="flex flex-col h-2/3 my-4 bg-[#151223] gap-y-4 px-2">
                         {messageList.map((message, i) => {
@@ -37,6 +37,8 @@ const ChatRoomPage = () => {
                             )
                         })}
                     </div>
+                    <input placeholder="Write a message" className="flex px-8 rounded-lg my-4 border-2 border-[#1F1C32] placeholder:text-[#1F1C32] bg-[#151223] text-white font-bold py-2 mx-12" ></input>
+
                 </div>}
             </div>
 

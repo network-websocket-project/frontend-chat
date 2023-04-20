@@ -5,10 +5,11 @@ import { AuthContext } from "./contexts/AuthContext";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ChatRoomPage from "./pages/ChatroomPage";
+import AllGroupPage from "./pages/AllGroup";
+import CreateGroupPage from "./pages/CreateGroup";
 
 function App() {
   const [token, login, logout, userInfo, setUserInfo] = useAuth();
-
   return (
     <AuthContext.Provider
       value={{ token, login, logout, userInfo, setUserInfo }}
@@ -18,7 +19,9 @@ function App() {
         <Route path="/login" element={<LoginPage />}></Route>
         <Route path="/register" element={<RegisterPage />}></Route>
         <Route path="/chatroom" element={<ChatRoomPage />}></Route>
-      </Routes>
+        <Route path="/all-group" element={<AllGroupPage />}></Route>
+        <Route path="/create-group" element={<CreateGroupPage />}></Route>
+      </Routes>{" "}
     </AuthContext.Provider>
   );
 }
