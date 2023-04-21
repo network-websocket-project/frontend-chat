@@ -1,14 +1,38 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import ProfileCard from "../components/ProfileCard";
 import defaulProfile from "../assets/DefaultProfile.svg"
+import { apiClient } from "../utils/apiClient";
 
-
-const chatList = [{ name: "Asia", isGroup: false, }, { name: "Dota2", isGroup: true }];
+const ENDPOINT = "http://localhost:5000";
+// const chatList = [{ name: "Asia", isGroup: false, }, { name: "Dota2", isGroup: true }];
 const messageList = [{ sender: "nart", text: "Hi!" }, { sender: "plub", text: "Anyone there?" }, { sender: "asia", text: "Me" }, { sender: "yuan", text: "Let go out side!" }];
 const ChatRoomPage = () => {
 
     const [selectChat, setSelectChat] = useState();
+    const [chatList, setChatList] = useState([]);
+
+    useEffect(() => {
+        const fetchAllUser = async () => {
+            const response = await apiClient.get("/user");
+            const chatListTest = response.data;
+            chatListTest.forEach(chat => {
+                chat["isGroup"] = false;
+            });
+            setChatList(chatListTest);
+        }
+        const fetchAllGroupChat = async () => {
+            const response = await apiClient.get("/chat/myGroupChat");
+            const groupChatListTest = response.data;
+            groupChatListTest.forEach(groupChat => {
+                groupChat["isGroup"] = true;
+            })
+            setChatList((prev) => [...prev, ...groupChatListTest]);
+        }
+        fetchAllUser();
+        fetchAllGroupChat();
+    }, [])
+    console.log(chatList);
 
     return (
         <>
@@ -19,12 +43,13 @@ const ChatRoomPage = () => {
                     <input placeholder="Find Chat" className="flex px-2 rounded-lg justify-self-center my-4 border-2 border-[#1F1C32] placeholder:text-[#1F1C32] bg-[#151223] text-white font-bold py-2 w-full" ></input>
                     <div className="flex flex-col overflow-y-scroll gap-y-1">
                         {chatList.map((chat, i) => {
-                            return <ProfileCard group={chat.isGroup} name={chat.name} key={i} onClick={setSelectChat.bind(null, chat)} />
+                            if (chatList.error === true) return;
+                            return <ProfileCard group={chat.isGroup} name={chat.isGroup ? chat.chatName : chat.nickname} key={i} onClick={setSelectChat.bind(null, chat)} />
                         })}
                     </div>
                 </div>
                 {selectChat && <div className="w-full bg-[#151223] h-[90vh] px-8 pt-4 pb-8 flex flex-col">
-                    <ProfileCard group={selectChat.isGroup} name={selectChat.name} large />
+                    <ProfileCard group={selectChat.isGroup} name={selectChat.isGroup ? selectChat.chatName : selectChat.nickname} large />
                     <div className="flex flex-col h-2/3 my-4 bg-[#151223] gap-y-4 px-2">
                         {messageList.map((message, i) => {
                             return (

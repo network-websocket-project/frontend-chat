@@ -1,13 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import createGroup from "../assets/CreateGroup.svg"
 import Navbar from "../components/Navbar";
-
-const groupList = ["SE II", "Comp network", "NN", "OS", "PM2"]
+import { apiClient } from "../utils/apiClient";
+// const groupList = ["SE II", "Comp network", "NN", "OS", "PM2"]
 
 const AllGroupPage = () => {
-
+    const [groupList, setGroupList] = useState(["GG"]);
     const navigate = useNavigate();
+
+    const fetchAllGroup = async () => {
+        const res = await apiClient.get("/chat/groupChat");
+        setGroupList(res.data);
+    }
+
+    useEffect(() => {
+        fetchAllGroup();
+    }, [])
 
     const createGroupHandler = () => {
         navigate("/create-group");
@@ -25,7 +34,7 @@ const AllGroupPage = () => {
                 <div className="flex flex-col gap-y-3 max-h-3/4">
                     {
                         groupList.map((group, i) => {
-                            return <div className="pl-8 font-montserrat font-bold text-white w-full text-xl bg-[#19182D] rounded-lg py-3">{group}</div>
+                            return <div className="pl-8 font-montserrat font-bold text-white w-full text-xl bg-[#19182D] rounded-lg py-3" key={i}>{group.chatName}</div>
                         })
                     }
                 </div>

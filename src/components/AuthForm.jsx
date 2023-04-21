@@ -7,6 +7,7 @@ import { useState, useContext } from "react";
 import uploadButton from "../assets/UploadButton.svg";
 import { authClient } from "../utils/auth";
 import { AuthContext } from "../contexts/AuthContext";
+import { apiClient } from "../utils/apiClient";
 
 const AuthForm = ({
   inputs,
@@ -20,17 +21,14 @@ const AuthForm = ({
   back,
 }) => {
   const authCtx = useContext(AuthContext);
-  console.log(inputs[0].initialValid);
   let initState = {};
   let initialFormValid = true;
   inputs.forEach((input) => {
     initialFormValid = initialFormValid && input.initialValid;
-    console.log(input.initialValid);
     initState[input.id] = {
       value: input.initialValue ? input.initialValue : "", isValid: input.initialValid ? input.initialValid : false
     };
   });
-  console.log(initState, initialFormValid);
   const [formState, inputHandler, setFormData] = useForm(initState, initialFormValid);
   useEffect(() => {
     setFormData(initState, initialFormValid);
@@ -48,7 +46,7 @@ const AuthForm = ({
     setPreviewProfile(URL.createObjectURL(event.target.files[0]));
   };
   const submitAuth = async () => {
-    let username, password, nickname, data, path;
+    let username, password, nickname, name, data, path;
     if (submitText === "Login") {
       path = "/user/login";
       username = formState.inputs.uname.value;
@@ -61,21 +59,35 @@ const AuthForm = ({
       nickname = formState.inputs.nname.value;
       data = JSON.stringify({ username, password, nickname });
     } else if (submitText === "Edit") {
-
+      path = "/user/edit";
+    } else if (submitText === "Create") {
+      path = "/chat/group";
+      name = formState.inputs.gname.value;
+      data = JSON.stringify({ name });
     }
     try {
-      const res = await authClient.post(path, data, {
-        headers: { "Content-Type": "application/json" },
-      });
       if (submitText === "Login" || submitText === "Register") {
+        const res = await authClient.post(path, data, {
+          headers: { "Content-Type": "application/json" },
+        });
         authCtx.login(res.data);
+        navigate('/chatroom');
+      }
+      else if (submitText === "Edit") {
+
+      }
+      else if (submitText === "Create") {
+        console.log(data);
+        const res = await apiClient.post(path, data, {
+          headers: { "Content-Type": "application/json" },
+        });
         navigate('/chatroom');
       }
     } catch (err) {
       console.log(err);
     }
   };
-  console.log(formState);
+  // console.log(formState);
   return (
     <>
       <div className=" flex flex-col pt-8 pb-2 w-[30%] rounded-lg bg-white gap-y-2 items-center">
