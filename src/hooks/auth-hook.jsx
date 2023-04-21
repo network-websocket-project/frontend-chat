@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { apiClient } from "../utils/apiClient";
 
 export const useAuth = () => {
@@ -8,11 +8,11 @@ export const useAuth = () => {
   const login = (userInfo) => {
     const { avatar, id, nickname, token, username } = userInfo;
     setToken(token);
-    setUserInfo({ nickname: nickname, avatar: avatar });
-    localStorage.setItem("token",token)
+    setUserInfo({ nickname: nickname, avatar: avatar, username: username, _id: id });
+    localStorage.setItem("token", token)
   };
 
-  const logout=()=>{
+  const logout = () => {
     setToken(null);
     setUserInfo(null)
     localStorage.removeItem("token")
