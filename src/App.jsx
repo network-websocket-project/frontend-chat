@@ -7,6 +7,8 @@ import RegisterPage from "./pages/RegisterPage";
 import ChatRoomPage from "./pages/ChatroomPage";
 import AllGroupPage from "./pages/AllGroup";
 import CreateGroupPage from "./pages/CreateGroup";
+import EditProfilePage from "./pages/EditProfile";
+
 
 function App() {
   const [token, login, logout, userInfo, setUserInfo] = useAuth();
@@ -21,6 +23,7 @@ function App() {
         <Route path="/chatroom" element={<ChatRoomPage />}></Route>
         <Route path="/all-group" element={<AllGroupPage />}></Route>
         <Route path="/create-group" element={<CreateGroupPage />}></Route>
+        <Route path="/edit-profile" element={<EditProfilePage />}></Route>
       </Routes>{" "}
     </AuthContext.Provider>
   );

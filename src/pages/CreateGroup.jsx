@@ -18,7 +18,7 @@ const CreateGroupPage = () => {
             </div>
             <div className="flex flex-col bg-[#151223] h-[100vh] justify-center items-center gap-y-10">
                 <img className="w-80" src={logo} />
-                <AuthForm inputs={inputs} submitText="Create" />
+                <AuthForm inputs={inputs} submitText="Create" to="/chatroom" />
             </div>
         </>
     );

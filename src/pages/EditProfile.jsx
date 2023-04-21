@@ -1,0 +1,22 @@
+import React, { useContext } from "react";
+import AuthForm from "../components/AuthForm";
+import logo from "../assets/Logo.svg"
+import { AuthContext } from "../contexts/AuthContext";
+
+const EditProfilePage = () => {
+
+    const authCtx = useContext(AuthContext);
+    if (!authCtx.userInfo) return;
+    const inputs = [{ type: "text", placeholder: "nickname", id: "nname", initialValue: authCtx.userInfo.nickname, initialValid: true }]
+
+    return (
+        <>
+            <div className="flex flex-col bg-[#151223] h-[100vh] justify-center items-center gap-y-10">
+                <img className="w-80" src={logo} />
+                <AuthForm inputs={inputs} submitText="Edit" title="Edit Profile" file preview back />
+            </div>
+        </>
+    )
+}
+
+export default EditProfilePage;

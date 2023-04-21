@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "../hooks/form-hook";
 import Input from "./Input.jsx";
 import { VALIDATOR_REQUIRE, VALIDATOR_MATCH } from "./Validate";
@@ -16,14 +16,27 @@ const AuthForm = ({
   to,
   title,
   file,
+  preview,
+  back,
 }) => {
   const authCtx = useContext(AuthContext);
+  console.log(inputs[0].initialValid);
   let initState = {};
+  let initialFormValid = true;
   inputs.forEach((input) => {
-    initState[input.id] = { value: "", isValid: false };
+    initialFormValid = initialFormValid && input.initialValid;
+    console.log(input.initialValid);
+    initState[input.id] = {
+      value: input.initialValue ? input.initialValue : "", isValid: input.initialValid ? input.initialValid : false
+    };
   });
-  const [formState, inputHandler] = useForm(initState);
+  console.log(initState, initialFormValid);
+  const [formState, inputHandler, setFormData] = useForm(initState, initialFormValid);
+  useEffect(() => {
+    setFormData(initState, initialFormValid);
+  }, [])
   const [selectedProfile, setSelectedProfile] = useState(null);
+  const [previewProfile, setPreviewProfile] = useState(null);
   const navigate = useNavigate();
   const navigateHandler = (path) => {
     navigate(path);
@@ -32,6 +45,7 @@ const AuthForm = ({
     event.preventDefault();
     console.log(event.target.files[0].name);
     setSelectedProfile(event.target.files[0]);
+    setPreviewProfile(URL.createObjectURL(event.target.files[0]));
   };
   const submitAuth = async () => {
     let username, password, nickname, data, path;
@@ -40,18 +54,23 @@ const AuthForm = ({
       username = formState.inputs.uname.value;
       password = formState.inputs.pw.value;
       data = JSON.stringify({ username, password });
-    } else {
+    } else if (submitText === "Register") {
       path = "/user/register";
       username = formState.inputs.uname2.value;
       password = formState.inputs.pw.value;
       nickname = formState.inputs.nname.value;
       data = JSON.stringify({ username, password, nickname });
+    } else if (submitText === "Edit") {
+
     }
     try {
       const res = await authClient.post(path, data, {
         headers: { "Content-Type": "application/json" },
       });
-      authCtx.login(res.data)
+      if (submitText === "Login" || submitText === "Register") {
+        authCtx.login(res.data);
+        navigate('/chatroom');
+      }
     } catch (err) {
       console.log(err);
     }
@@ -77,9 +96,15 @@ const AuthForm = ({
               }
               required
               key={i}
+              initialValue={input.initialValue ? input.initialValue : ""}
             />
           );
         })}
+        {preview && (
+          <>
+            <img src={previewProfile} className="max-h-[300px] px-4" />
+          </>
+        )}
         {file && (
           <>
             <label
@@ -103,13 +128,21 @@ const AuthForm = ({
             />
           </>
         )}
-        <button
-          className="disabled:opacity-50 disabled:cursor-no-drop text-white font-bold font-montserrat bg-[#4E38A1] w-[50%] rounded-lg py-2 text-xl mt-4 mb-2"
-          disabled={!formState.isValid}
-          onClick={submitAuth}
-        >
-          {submitText}
-        </button>
+        <div className="w-full flex flex-row gap-x-2 justify-center px-8">
+          {back && <button
+            className="disabled:opacity-50 disabled:cursor-no-drop text-white font-bold font-montserrat bg-[#909090] w-[50%] rounded-lg py-2 text-xl mt-4 mb-2"
+            onClick={navigateHandler.bind(null, -1)}>
+            back
+          </button>
+          }
+          <button
+            className="disabled:opacity-50 disabled:cursor-no-drop text-white font-bold font-montserrat bg-[#4E38A1] w-[50%] rounded-lg py-2 text-xl mt-4 mb-2"
+            disabled={!formState.isValid}
+            onClick={submitAuth}
+          >
+            {submitText}
+          </button>
+        </div>
 
         <div className="flex flex-row justify-center font-montserrat gap-x-2 font-bold">
           <div className="text-[#909090]">{navigateText1}</div>
