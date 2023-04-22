@@ -85,6 +85,7 @@ const ChatRoomPage = () => {
     const chatChangeHandler = async (chat) => {
         if (chat === selectChat) return;
         // console.log(typeof selectChatId === "string");
+        socket.off("message received")
         if (selectChatId) socket.emit("leave chat", selectChatId);
         if (chat.isGroup === false) {
             let userId = chat._id; //This give partner Id
