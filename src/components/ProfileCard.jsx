@@ -5,7 +5,7 @@ import online from "../assets/Online.svg"
 import offline from "../assets/Offline.svg"
 import notiLogo from "../assets/Noti.svg"
 const ProfileCard = ({ h, group, name = "Demo", status = 1, onClick, large, profile, noti }) => {
-    // if (name == "asia") console.log(noti);
+    console.log('eiei');
     return (
         <>
             <div className={`${large ? "h-20" : "h-12"} relative flex flex-row ${large ? "items-start" : "items-center"} gap-x-${large ? 8 : 4}  font-montserrat min-w-fit cursor-pointer`} onClick={onClick}>
