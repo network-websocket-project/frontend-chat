@@ -40,13 +40,18 @@ const ChatRoomPage = () => {
     }, [])
 
     const fetchMessage = async () => {
-        const { data } = await apiClient.get(`message/${selectChatId}`);
-        let initialMessage = [];
-        data.forEach(element => {
-            initialMessage.push({ sender: element.sender.nickname, content: element.content });
-        });
-        // console.log(initialMessage);
-        setMessageList(initialMessage);
+        try {
+            const { data } = await apiClient.get(`message/${selectChatId}`);
+            let initialMessage = [];
+            data.forEach(element => {
+                initialMessage.push({ sender: element.sender.nickname, content: element.content });
+            });
+            // console.log(initialMessage);
+            setMessageList(initialMessage);
+        }
+        catch (err) {
+            console.log(err);
+        }
     }
     useEffect(() => {
         if (selectChatId) {
@@ -56,7 +61,7 @@ const ChatRoomPage = () => {
     }, [selectChatId])
 
     useEffect(() => {
-        if (authCtx.userInfo) {
+        if (authCtx.userInfo && !socketConnected) {
             socket = io(ENDPOINT);
             socket.emit("setup", authCtx.userInfo);
             socket.on("connected", () => setSocketConnected(true));
@@ -64,7 +69,7 @@ const ChatRoomPage = () => {
     }, [authCtx.userInfo]);
 
     useEffect(() => {
-        if (authCtx.userInfo && selectChatId) {
+        if (authCtx.userInfo) {
             socket.on("message received", (newMessageRecieved) => {
                 console.log(newMessageRecieved, selectChatCompare, selectChatId, newMessageRecieved.chat._id);
                 if (!selectChatCompare || selectChatId !== newMessageRecieved.chat._id) {
@@ -79,15 +84,23 @@ const ChatRoomPage = () => {
     }, [authCtx.userInfo, selectChatId]);
     const chatChangeHandler = async (chat) => {
         if (chat === selectChat) return;
-        let userId = chat._id;
-        let data = JSON.stringify({ userId });
-        const res = await apiClient.post("/chat", data, {
-            headers: { "Content-Type": "Application/json" }
-        });
-        setSelectChat(chat);
-        setSelectChatId(res.data._id);
-        console.log(res.data._id);
-        socket.emit("join chat", res.data._id);
+        // console.log(typeof selectChatId === "string");
+        if (selectChatId) socket.emit("leave chat", selectChatId);
+        if (chat.isGroup === false) {
+            let userId = chat._id; //This give partner Id
+            let data = JSON.stringify({ userId });
+            const res = await apiClient.post("/chat", data, {
+                headers: { "Content-Type": "Application/json" }
+            });
+            setSelectChatId(res.data._id);
+            setSelectChat(chat);
+            socket.emit("join chat", res.data._id);
+        } else if (chat.isGroup === true) {
+            setSelectChatId(chat._id); //This shall give group Id
+            setSelectChat(chat);
+            console.log(chat._id);
+            socket.emit("join chat", chat._id);
+        }
     }
     // console.log(`chatId:${selectChatId}`);
     const sendMessage = async (event) => {
