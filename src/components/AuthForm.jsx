@@ -60,6 +60,7 @@ const AuthForm = ({
       data = JSON.stringify({ username, password, nickname });
     } else if (submitText === "Edit") {
       path = "/user/edit";
+      nickname = formState.inputs.nname.value;
     } else if (submitText === "Create") {
       path = "/chat/group";
       name = formState.inputs.gname.value;
@@ -67,14 +68,30 @@ const AuthForm = ({
     }
     try {
       if (submitText === "Login" || submitText === "Register") {
-        const res = await authClient.post(path, data, {
+        let res = await authClient.post(path, data, {
           headers: { "Content-Type": "application/json" },
         });
+        if (submitText === "Register") {
+          const formData = new FormData();
+          formData.append("nickname", nickname);
+          formData.append("avatar", selectedProfile);
+          console.log(res);
+          let res2 = await authClient.put("/user/edit", formData, {
+            headers: { "Authorization": "Bearer " + res.data.token }
+          });
+          // console.log(res, res2);
+        }
         authCtx.login(res.data);
         navigate('/chatroom');
       }
       else if (submitText === "Edit") {
-
+        const formData = new FormData();
+        formData.append("nickname", nickname);
+        formData.append("avatar", selectedProfile);
+        console.log(nickname);
+        const res = await apiClient.put("/user/edit", formData);
+        navigate("/chatroom");
+        console.log(res);
       }
       else if (submitText === "Create") {
         console.log(data);

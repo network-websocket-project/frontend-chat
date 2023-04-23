@@ -4,14 +4,17 @@ import ProfileCard from "./ProfileCard";
 import { Navigate, useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import logout from "../assets/Logout.svg"
+import { SocketContext } from "../contexts/SocketContext";
 
 const Navbar = () => {
     const authCtx = useContext(AuthContext);
     const navigate = useNavigate();
+    const socketCtx = useContext(SocketContext);
     const groupHandler = () => {
         navigate("/all-group");
     }
     const logoutHandler = () => {
+        socketCtx.socket.emit("custom disconnect");
         authCtx.logout();
         navigate("/login");
     }
@@ -21,7 +24,7 @@ const Navbar = () => {
                 <img className="w-48 cursor-pointer" src={logo} onClick={navigate.bind(null, "/chatroom")} />
                 <div className="flex flex-row items-center font-montserrat min-w-fit gap-x-8">
                     <div className="font-bold min-w-fit hover:cursor-pointer" onClick={groupHandler}>All Groups</div>
-                    <ProfileCard h="20" name={authCtx.userInfo.nickname} onClick={navigate.bind(null, "/edit-profile")} profile />
+                    <ProfileCard h="20" name={authCtx.userInfo.nickname} onClick={navigate.bind(null, "/edit-profile")} avatar={authCtx.userInfo.avatar} profile />
                     <img className="w-8 cursor-pointer" src={logout} onClick={logoutHandler} />
                 </div>
             </div>}
