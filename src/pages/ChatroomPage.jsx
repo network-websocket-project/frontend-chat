@@ -22,6 +22,7 @@ const ChatRoomPage = () => {
     const [isTyping, setIsTyping] = useState(false);
     const [initialOnline, setInitialOnline] = useState([]);
     const socketCtx = useContext(SocketContext);
+    const [fetchAgain, setFetchAgain] = useState(0);
     useEffect(() => {
         const fetchAllUser = async () => {
             let response = await apiClient.get("/user");
@@ -83,7 +84,7 @@ const ChatRoomPage = () => {
             fetchAllUser();
             fetchAllGroupChat();
         }
-    }, [socketConnected, authCtx.userInfo]);
+    }, [socketConnected, authCtx.userInfo, fetchAgain]);
 
     const fetchMessage = async () => {
         try {
@@ -139,16 +140,24 @@ const ChatRoomPage = () => {
             socket.on("typing", () => setIsTyping(true));
             socket.on("stop typing", () => setIsTyping(false));
             socket.on("online", (userData) => {
+                let found = false;
                 setChatList((prevArray) =>
                     prevArray.map((chat) => {
                         if (chat.isGroup === false) {
                             if (chat._id === userData._id) {
+                                found = true;
                                 chat.isOnline = true;
                             }
                         }
                         return chat; // return all other objects unchanged
                     })
                 );
+                console.log(found);
+                if (!found) {
+                    setInitialOnline((prev) => [...prev, userData._id]);
+                    setFetchAgain(!fetchAgain);
+                    // fetchAgain = !fetchAgain;
+                }
             });
             socket.on("offline", (userData) => {
                 setChatList((prevArray) =>
@@ -336,11 +345,11 @@ const ChatRoomPage = () => {
                     <div className="text-white font-montserrat font-bold text-xl">
                         Chats
                     </div>
-                    <input
+                    {/* <input
                         placeholder="Find Chat"
                         className="flex px-2 rounded-lg justify-self-center my-4 border-2 border-[#1F1C32] placeholder:text-[#1F1C32] bg-[#151223] text-white font-bold py-2 w-full"
-                    ></input>
-                    <div className="flex flex-col overflow-y-scroll gap-y-1">
+                    ></input> */}
+                    <div className="flex flex-col overflow-y-scroll gap-y-2 h-[85vh]">
                         {chatList.map((chat, i) => {
                             return (
                                 <ProfileCard
